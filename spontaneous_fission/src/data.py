@@ -7,16 +7,29 @@ Created on Mon Aug 22 18:51:02 2022
 """
 
 import pandas as pd
+import os
 
 class data():
     
     def __init__(self):
 
+        #Relative path to the data
+        data_path = os.path.dirname(os.path.abspath(__file__)) \
+            + '/../data/decay_data.csv'
+        
         #Get data
-        self.df = pd.read_csv('decay_data.csv')
+        self.df = pd.read_csv(data_path)
         
         #Prepare the data
         self._prepare()
+        
+    def get_SF_percent(self,name):
+        
+        #Get dictionary with percents
+        dic = self.get_decay_percent(name)
+        
+        #Return percent spontaneous fission
+        return dic['SF']
         
     def get_decay_percent(self,name):
         
@@ -43,6 +56,14 @@ class data():
         
         #Return the item for the isotope 
         return df.loc[name,item]
+    
+    def check_name(self,name):
+        
+        #Data frame 
+        df = self.df
+        
+        #Check if name is in index and return result
+        return name in df.index
         
     def _prepare(self):
         
@@ -55,7 +76,7 @@ class data():
         #Set the name needed 
         df['name'] = \
             df[['symbol','a']].apply(
-                lambda x: '{}-{}'.format(*x),axis=1
+                lambda x: '{}{}'.format(*x),axis=1
                 ).str.upper()
         
         #Use the name as index    
@@ -68,10 +89,14 @@ class data():
 if __name__ == '__main__':
     
     dobj = data()
-    item = dobj.get_item('U-235','half_life')
+    item = dobj.get_item('U235','half_life')
     print('half-life for U-235')
     print(item)
     
     print('decay percents for U-235')
-    decay = dobj.get_decay_percent('U-235')
+    decay = dobj.get_decay_percent('U235')
     print(decay)
+    
+    print('spontaneous fission rate percent for U235')
+    sf_percent = dobj.get_SF_percent('U235')
+    print(sf_percent)
