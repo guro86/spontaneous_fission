@@ -8,10 +8,19 @@ Created on Mon Aug 22 18:51:02 2022
 
 import pandas as pd
 import os
+import numpy as np
 
 class data():
     
     def __init__(self):
+        '''
+        Constructs the data object.
+
+        Returns
+        -------
+        None.
+
+        '''
 
         #Relative path to the data
         data_path = os.path.dirname(os.path.abspath(__file__)) \
@@ -27,14 +36,48 @@ class data():
         self._prepare()
         
     def get_SF_percent(self,name):
+        '''
+        Get the SF percent for a material with name.
+
+        Parameters
+        ----------
+        name : str
+            name, e.g. U235
+
+        Returns
+        -------
+        SF_percet : float
+            The percent that is due to SF, nan if no SF.
+
+        '''
         
         #Get dictionary with percents
         dic = self.get_decay_percent(name)
         
-        #Return percent spontaneous fission
-        return dic['SF']
+        #If sponatenous fission
+        if 'SF' in dic:
+            #Return percent spontaneous fission
+            return dic['SF']
+        
+        else:
+            #Return nan
+            return np.nan
         
     def get_decay_percent(self,name):
+        '''
+        Get a dictionary with decay percents.
+
+        Parameters
+        ----------
+        name : str
+            name of nuclide, e.g. U235
+
+        Returns
+        -------
+        dic : dictionary
+            dict with percents, e.g. {'SF':100} 
+
+        '''
         
         #The data frame 
         df = self.df
@@ -53,6 +96,22 @@ class data():
         return dic
         
     def get_item(self,name,item):
+        '''
+        Get any item stored in the data for the nuclide.
+
+        Parameters
+        ----------
+        name : str
+            name of nuclide, e.g. U235
+        item : str
+            item description, e.g. half_life_s
+
+        Returns
+        -------
+        value : float / str
+            Returns whatever value stored.
+
+        '''
         
         #Data frame 
         df = self.df
@@ -61,14 +120,38 @@ class data():
         return df.loc[name,item]
     
     def check_name(self,name):
+        '''
+        Check if nuclide is present in the data.
+
+        Parameters
+        ----------
+        name : str
+            name of nuclide, i.e. U235
+
+        Returns
+        -------
+        isin : bool
+            True if present, False if not
+
+        '''
         
         #Data frame 
         df = self.df
         
         #Check if name is in index and return result
-        return name in df.index
+        isin = name in df.index
+        
+        return isin
         
     def _prepare(self):
+        '''
+        Internal method that prepares the data for reading.
+
+        Returns
+        -------
+        None.
+
+        '''
         
         #Get the data frame
         df = self.df
