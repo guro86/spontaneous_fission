@@ -18,7 +18,10 @@ class data():
             + '/../data/decay_data.csv'
         
         #Get data
-        self.df = pd.read_csv(data_path)
+        self.df = pd.read_csv(
+            data_path,
+            na_values=[' ','']
+            )
         
         #Prepare the data
         self._prepare()
